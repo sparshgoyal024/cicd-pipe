@@ -5,7 +5,7 @@ phases:
         python: 3.8
   build:
     commands:
-      - sam package --template-file template.yml --s3-bucket sam-app-deploy1 --output-template-file packaged.yml
+      - sam package --template-file template.yaml --s3-bucket sam-app-deploy1 --output-template-file packaged.yaml
 artifacts:
   files:
-    - packaged.yml
+    - packaged.yaml
