@@ -13,7 +13,7 @@ def lambda_handler(event, context):
     state_file = '/tmp/state.txt'
     no_file = '/tmp/state1.txt'
 
-    time.sleep(1.56978)
+    time.sleep(14)
     execute = (time.time() - start_time)
     dynamodb = boto3.client('dynamodb')
 
@@ -36,7 +36,7 @@ def lambda_handler(event, context):
 
     for rows in number[resume_number::]:
         n += 1
-        if (time.time() - start_time) > 1:
+        if (time.time() - start_time) > 14.9:
             print(rows)
             dynamodb.put_item(TableName='wiki', Item={'rank':{'S':rows}})
             outfile = open(state_file,'wb')
@@ -45,6 +45,7 @@ def lambda_handler(event, context):
             outfile1 = open(no_file,'wb')
             pickle.dump(n,outfile1)
             outfile1.close()
+            break
 
     return {
         "statusCode": 200,
