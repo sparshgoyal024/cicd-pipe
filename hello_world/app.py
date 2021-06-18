@@ -13,7 +13,7 @@ def lambda_handler(event, context):
     state_file = '/tmp/state.txt'
     no_file = '/tmp/state1.txt'
 
-    time.sleep(14)
+    time.sleep(14) #seconds consider as minute just for testing, same logic works for minutes 
     execute = (time.time() - start_time)
     dynamodb = boto3.client('dynamodb')
 
