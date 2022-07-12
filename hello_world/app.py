@@ -16,6 +16,7 @@ def lambda_handler(event, context):
     time.sleep(14) #seconds consider as minute just for testing, same logic works for minutes 
     execute = (time.time() - start_time)
     dynamodb = boto3.client('dynamodb')
+    print(dynamodb)
 
 
 
@@ -25,6 +26,7 @@ def lambda_handler(event, context):
         number = df.head(200).to_string(index=False).split("\n")
         resume_number = 1
         n=0
+        print("if")
     else:
         infile = open(state_file,'rb')
         number = pickle.load(infile)
@@ -32,6 +34,7 @@ def lambda_handler(event, context):
         infile_no = open(no_file,'rb')
         resume_number = pickle.load(infile_no)
         n=resume_number
+        print("else")
         infile_no.close()
 
     for rows in number[resume_number::]:
