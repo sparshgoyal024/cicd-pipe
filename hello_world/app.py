@@ -44,7 +44,7 @@ def lambda_handler(event, context):
         #print("hllo")
 
         #print(time.time() - start_time) # ~5
-        if (time.time() - start_time) < 5:
+        if (time.time() - start_time) < 7:
 
             time.sleep(1)
             outfile = open("/tmp/state.txt",'wb')
@@ -58,6 +58,7 @@ def lambda_handler(event, context):
             dynamodb.put_item(TableName='wiki', Item={'rank':{'S':rows}})
 
         else:
+            print("Test")
             break
     return {
         "statusCode": 200,
