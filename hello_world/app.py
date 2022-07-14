@@ -7,64 +7,46 @@ import boto3
 
 def lambda_handler(event, context):
 
-    start_time = time.time()
+    fn_start_time = time.time()
 
-    url='https://en.wikipedia.org/wiki/List_of_cities_in_India_by_population'
+    wiki_url='https://en.wikipedia.org/wiki/List_of_cities_in_India_by_population'
 
-    time.sleep(4) #seconds consider as minute just for testing, same logic works for minutes 
-    execute = (time.time() - start_time)
-    dynamodb = boto3.client('dynamodb')
-    #print(execute)
+    time.sleep(14) #seconds consider as minute just for testing, same logic works for minutes 
+    diff_time = (time.time() - fn_start_time)
+    dynamodb = boto3.client('dynamodb') #Init DynamoDB Client
 
-
-
-    if not os.path.isfile("/tmp/state.txt"):
-        #outfile = open(state_file,'x')
-        df=pd.read_html(url, header=0)[0]
-        df = df[['Rank']]
-        number = df.head(200).to_string(index=False).split("\n")
-        #print(number)
-        resume_number = 1
-        n=0
-        #print("if")
+    if not os.path.isfile("/tmp/rank.txt"): # Checking if state file file exists or not 
+        df=pd.read_html(wiki_url, header=0)[0]  # Reading the URL using Pandas
+        df = df[['Rank']] # Using DataFrames
+        number = df.head(200).to_string(index=False).split("\n") 
+        resume_number = 1 # Starting Index
+        n=0 # Counter
     else:
-        infile = open("/tmp/state.txt",'rb')
-        number = pickle.load(infile)
+        infile = open("/tmp/rank.txt",'rb') #Opening State file in read binary mode
+        number = pickle.load(infile) #Actual Rank
         infile.close()
-        infile_no = open("/tmp/state1.txt",'rb')
-        resume_number = pickle.load(infile_no)
-        #print("he",resume_number)
+        index = open("/tmp/state.txt",'rb') 
+        resume_number = pickle.load(index) #Reading Resume Index if function is executed again
         n=resume_number
-        #print("else")
         infile_no.close()
 
-    for rows in number[resume_number::]:
-        #print(rows)
+    for rank in number[resume_number::]:
 
-        #print("hllo")
-
-        print(time.time() - start_time) # ~5
-        if (time.time() - start_time) < 10:
-
-            time.sleep(1)
-            outfile = open("/tmp/state.txt",'wb')
-            pickle.dump(number,outfile)
-            outfile.close()
-            outfile1 = open("/tmp/state1.txt",'wb')
+        if (time.time() - start_time) < 14.9:
+            rank_file = open("/tmp/rank.txt",'wb') 
+            pickle.dump(number,rank_file) #Storing the Rank
+            rank_file.close()
+            state_file = open("/tmp/state.txt",'wb')
             n = resume_number + 1
-            pickle.dump(n,outfile1)
-            outfile1.close()
-            print(rows)
-            dynamodb.put_item(TableName='wiki', Item={'rank':{'S':rows}})
+            pickle.dump(n,state_file) #Storing the State
+            state_file.close()
+            dynamodb.put_item(TableName='wiki', Item={'rank':{'S':rank}})
 
         else:
-            print("Test")
-            print(time.time() - start_time)
             break
     return {
         "statusCode": 200,
         "body": json.dumps({
-            "message": "hello world",
-            # "location": ip.text.replace("\n", "")
+            "message": "Function Executed Completed",
         }),
     }
