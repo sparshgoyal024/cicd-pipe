@@ -6,50 +6,59 @@ import pickle
 import boto3
 
 def lambda_handler(event, context):
+
     start_time = time.time()
 
     url='https://en.wikipedia.org/wiki/List_of_cities_in_India_by_population'
 
-    state_file = '/tmp/state.txt'
-    no_file = '/tmp/state1.txt'
-
-    time.sleep(14) #seconds consider as minute just for testing, same logic works for minutes 
+    time.sleep(4) #seconds consider as minute just for testing, same logic works for minutes 
     execute = (time.time() - start_time)
     dynamodb = boto3.client('dynamodb')
-    print(dynamodb)
+    #print(execute)
 
 
 
-    if not os.path.isfile("/tmp/state.txt"):
+    if not os.path.isfile("state.txt"):
+        #outfile = open(state_file,'x')
         df=pd.read_html(url, header=0)[0]
         df = df[['Rank']]
         number = df.head(200).to_string(index=False).split("\n")
+        #print(number)
         resume_number = 1
         n=0
-        print("if")
+        #print("if")
     else:
-        infile = open(state_file,'rb')
+        infile = open("state.txt",'rb')
         number = pickle.load(infile)
         infile.close()
-        infile_no = open(no_file,'rb')
+        infile_no = open("state1.txt",'rb')
         resume_number = pickle.load(infile_no)
+        #print("he",resume_number)
         n=resume_number
-        print("else")
+        #print("else")
         infile_no.close()
 
     for rows in number[resume_number::]:
-        n += 1
-        if (time.time() - start_time) > 14.9:
-            print(rows)
-            dynamodb.put_item(TableName='wiki', Item={'rank':{'S':rows}})
-            outfile = open(state_file,'wb')
+        #print(rows)
+
+        #print("hllo")
+
+        #print(time.time() - start_time) # ~5
+        if (time.time() - start_time) < 5:
+
+            time.sleep(1)
+            outfile = open("state.txt",'wb')
             pickle.dump(number,outfile)
             outfile.close()
-            outfile1 = open(no_file,'wb')
+            outfile1 = open("state1.txt",'wb')
+            n = resume_number + 1
             pickle.dump(n,outfile1)
             outfile1.close()
-            break
+            print(rows)
+            dynamodb.put_item(TableName='wiki', Item={'rank':{'S':rows}})
 
+        else:
+            break
     return {
         "statusCode": 200,
         "body": json.dumps({
