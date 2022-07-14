@@ -43,8 +43,8 @@ def lambda_handler(event, context):
 
         #print("hllo")
 
-        #print(time.time() - start_time) # ~5
-        if (time.time() - start_time) < 7:
+        print(time.time() - start_time) # ~5
+        if (time.time() - start_time) < 10:
 
             time.sleep(1)
             outfile = open("/tmp/state.txt",'wb')
@@ -59,6 +59,7 @@ def lambda_handler(event, context):
 
         else:
             print("Test")
+            print(time.time() - start_time)
             break
     return {
         "statusCode": 200,
