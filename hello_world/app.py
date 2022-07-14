@@ -18,7 +18,7 @@ def lambda_handler(event, context):
 
 
 
-    if not os.path.isfile("state.txt"):
+    if not os.path.isfile("/tmp/state.txt"):
         #outfile = open(state_file,'x')
         df=pd.read_html(url, header=0)[0]
         df = df[['Rank']]
@@ -28,10 +28,10 @@ def lambda_handler(event, context):
         n=0
         #print("if")
     else:
-        infile = open("state.txt",'rb')
+        infile = open("/tmp/state.txt",'rb')
         number = pickle.load(infile)
         infile.close()
-        infile_no = open("state1.txt",'rb')
+        infile_no = open("/tmp/state1.txt",'rb')
         resume_number = pickle.load(infile_no)
         #print("he",resume_number)
         n=resume_number
@@ -47,10 +47,10 @@ def lambda_handler(event, context):
         if (time.time() - start_time) < 5:
 
             time.sleep(1)
-            outfile = open("state.txt",'wb')
+            outfile = open("/tmp/state.txt",'wb')
             pickle.dump(number,outfile)
             outfile.close()
-            outfile1 = open("state1.txt",'wb')
+            outfile1 = open("/tmp/state1.txt",'wb')
             n = resume_number + 1
             pickle.dump(n,outfile1)
             outfile1.close()
